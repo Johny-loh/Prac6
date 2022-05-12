@@ -74,7 +74,6 @@ def handler(*args, **kwargs):
     plt.plot(timer, number_people_train, 'red')
     plt.plot(timer, number_people_stations, 'blue')
     plt.plot(timer, travel_time, 'purple')
-    print(travel_time)
     plt.show()
     exit(0)
 
