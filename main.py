@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import os
 
 async def task():
+    
+    loop.create_task(statistic())
 
     for t in range(TRAIN_COUNT):
         tr = Train(t + 1)
@@ -17,7 +19,6 @@ async def task():
         loop.create_task(generate_pass(st))
         await sleep(0)
 
-    loop.create_task(statistic())
 
 async def statistic(mode=1):
 
@@ -37,7 +38,7 @@ async def statistic(mode=1):
                 print(f'''{STATIONS[st]['n']}: {STATIONS[st]['r']['q'].qsize() + STATIONS[st]['l']['q'].qsize()}''')
 
             if STATIONS[st]['r']['q'].qsize() + STATIONS[st]['l']['q'].qsize() >= STATIONS_MAX_CAPACITY:
-                exit()
+                handler()
 
             await sleep(0)
 
@@ -57,20 +58,21 @@ async def statistic(mode=1):
 
                 number_people_stations[-1] += len(train.capacity)
 
-                offset = OFFSET[train.station - 1 - 1 * (train.direction == 'l')] + train.pos * 2
+                offset = OFFSET[train.station - 1 - 1 * (train.direction == 'l')] + train.pos * 3
                 print(f'''{train.n}:{" " * offset}{TRAIN}''', len(train.capacity))
 
                 await sleep(0)
 
             number_people_train[-1] /= TRAIN_COUNT
             number_people_stations[-1] /= 5
-            travel_time[-1] /= 5
+            travel_time[-1] /= TRAIN_COUNT
 
         await sleep(S)
 
-def handler(*args, **kwargs):
+def handler(*args):
 
-    timer = [t / 60 for t in range(len(number_people_stations))]
+    timer = [t * 30 for t in range(len(number_people_stations))]
+    plt.xlabel('Time')
     plt.plot(timer, number_people_train, 'red')
     plt.plot(timer, number_people_stations, 'blue')
     plt.plot(timer, travel_time, 'purple')
